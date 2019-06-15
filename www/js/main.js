@@ -1,12 +1,9 @@
 
 const itemContext = function (e) {
     if (!this.moveFlag) {
-        console.log(this.item)
         ons.notification.confirm('アイテムを削除しますか？', {
             callback: (index) => {
-                console.log(index)
                 if (index === -1 || index === 0) {
-                    console.log("canceled.");
                 } else if (index === 1) {
                     grid.remove(this.item, { removeElements: true })
                 }
@@ -19,15 +16,14 @@ const itemContext = function (e) {
 HTMLElement.prototype.addClickListener = function (listener) {
     listener.moveFlag = false;
     this.addEventListener("mousedown", () => { listener.moveFlag = false; });
-//    this.addEventListener("touchstart", () => { listener.moveFlag = false; });
+    //    this.addEventListener("touchstart", () => { listener.moveFlag = false; });
     this.addEventListener("mousemove", () => { listener.moveFlag = true; });
     this.addEventListener("touchmove", () => { listener.moveFlag = true; });
-    console.log(listener.moveFlag)
     this.addEventListener("mouseup", listener);
-//    this.addEventListener("touchend", listener);
+    //    this.addEventListener("touchend", listener);
 };
 
-const createItem = function () {
+const createItem = function (e) {
     const item = ons.createElement(`
     <div class="item">
         <div class="item-content">
@@ -35,13 +31,16 @@ const createItem = function () {
         </div>
     </div>
     `);
-
-    
+    camera.insertImage(item.querySelector(".item-content"), "test.png", {
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    });
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
 
 ons.ready(function () {
+    ///NCMB
+    fmbaas.ncmbGreet();
 
     ///Muuriの定義
     window.grid = new Muuri('.grid', {
@@ -57,8 +56,9 @@ ons.ready(function () {
 
     ///addButton
     const addButton = document.querySelector(".addbutton");
-    addButton.addEventListener("click", createItem);
-
+    addButton.addEventListener("click", {
+        handleEvent: createItem,
+    });
     ///OnsenUI is ready!!!
     console.log("Onsen UI is ready!");
 });

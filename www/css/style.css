@@ -1,2 +1,35 @@
-/**/
-
+/*Muuri*/
+.grid {
+  position: relative;
+  width: 100%;
+  height: 500px;
+}
+.item {
+  display: block;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  z-index: 1;
+  border: solid;
+  color: #000;
+}
+.item.muuri-item-dragging {
+  z-index: 3;
+  background: #fff;
+  border: 3px solid;
+  color: #000;
+}
+.item.muuri-item-releasing {
+  z-index: 2;
+  border: solid;
+  color: #f00;
+}
+.item.muuri-item-hidden {
+  z-index: 0;
+}
+.item-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}

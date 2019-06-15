@@ -1,13 +1,12 @@
 // // This is a JavaScript file
 
 camera = {};
-
 camera.photoIndex = 0;
 
 
 ///メインで使う
 ///optionsには、cordova camera option のほかに、画像を挿入したいelem、画像のfilenameを指定
-HTMLDivElement.prototype.addCameraEvent = function(elem, options){
+HTMLElement.prototype.addCameraEvent = function(_elem, options){
 
   if (options.hasOwnProperty('handleEvent')) {
     options.handleEvent = camera.insertImage;

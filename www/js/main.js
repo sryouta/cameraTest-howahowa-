@@ -84,6 +84,7 @@ const createItemFromCamera = function (e) {
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
+
 const createHowaHowaItem = function (e) {
     const item = ons.createElement(`
     <div class="item">
@@ -92,12 +93,13 @@ const createHowaHowaItem = function (e) {
         </div>
     </div>
     `);
-    camera.insertImage(item.querySelector(".item-content"), "test.png", {
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    });
+    
+    fn.createAlertDialog("howahowa-dialog.html");
+
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
+
 const createCommentItem = function (e) {
     const item = ons.createElement(`
     <div class="item">
@@ -106,9 +108,7 @@ const createCommentItem = function (e) {
         </div>
     </div>
     `);
-    camera.insertImage(item.querySelector(".item-content"), "test.png", {
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    });
+    fn.createAlertDialog("comment-dialog.html");
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
@@ -211,20 +211,20 @@ fn.init = function () {
     fn.load("home.html");
 };
 ///アラート読み込み用
-fn.createAlertDialog = function (url) {
-    var dialog = document.getElementById('my-alert-dialog');
+fn.createAlertDialog = function (pageid) {
+    var dialog = document.getElementById(pageid+"-page");
     if (dialog) {
         dialog.show();
     } else {
-        ons.createElement(url, { append: true })
-            .then(function (dialog) {
-                dialog.show();
-            });
-    }
+        ons.createElement(pageid, { append: true })
+          .then(function(dialog) {
+            dialog.show();
+          });
+      }
 };
 fn.hideAlertDialog = function (pageid) {
     document
-        .getElementById(pageid)
+        .getElementById(pageid+"-page")
         .hide();
 };
 document.addEventListener('postshow', function (event) {

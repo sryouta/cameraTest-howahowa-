@@ -123,6 +123,31 @@
       </div>
     </ons-page>
   </template>
-</body>
+
+  <template id="howahowa-dialog.html">
+      <ons-alert-dialog id="howahowa-dialog.html-page" modifier="rowfooter">
+        <div class="alert-dialog-title">Alert</div>
+        <div class="alert-dialog-content">
+          This dialog was created from a template
+        </div>
+        <div class="alert-dialog-footer">
+          <ons-alert-dialog-button onclick="fn.hideAlertDialog('howahowa-dialog.html-page')">Cancel</ons-alert-dialog-button>
+          <ons-alert-dialog-button onclick="fn.hideAlertDialog('howahowa-dialog.html-page')">OK</ons-alert-dialog-button>
+        </div>
+      </ons-alert-dialog>
+    </template>
+    <template id="comment-dialog.html">
+        <ons-alert-dialog id="comment-dialog.html-page" modifier="rowfooter">
+          <div class="alert-dialog-title">Alert</div>
+          <div class="alert-dialog-content">
+            This dialog was created from a template
+          </div>
+          <div class="alert-dialog-footer">
+            <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">Cancel</ons-alert-dialog-button>
+            <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">OK</ons-alert-dialog-button>
+          </div>
+        </ons-alert-dialog>
+      </template>
+    </body>
 
 </html>

@@ -26,7 +26,7 @@ camera.insertImage = function (item,fileName,options) {
       allowEdit: true,//andoroidでは無視される(大嘘)
       // encodingType: Camera.EncodingType.JPEG,
       // targetWidth: 100,targetHeight: 100,
-      mediatype: Camera.MediaType.PICTURE,//PHOTOLIBRARYまたはSAVEDPHOTOALBUMのみ有効。PICTURE,VIDEO,ALLMEDIA  
+      mediatype: Camera.MediaType.PICTURE,//PHOTOLIBRARYまたはSAVEDPHOTOALBUMのみ有効。PICTURE,VIDEO,ALLMEDIA
       correctOrientation: true,//写真が撮影されたときと同じ向きになるよう写真を回転させます。
       saveToPhotoAlbum: false, //撮影後端末に保存
       popoverOptions: CameraPopoverOptions, //iOSのみの設定。iPadでポップオーバー位置を明示するかどうか。

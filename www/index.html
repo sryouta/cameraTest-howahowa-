@@ -99,6 +99,12 @@
 
   <template id="home.html">
     <ons-page id="home.html-page">
+      <style>
+      svg{
+        width:50px;
+        height:50px;
+      }
+      </style>
       <ons-button class="addbutton">add</ons-button>
       <ons-button class="addbutton camera">add from camera</ons-button>
       <ons-button class="addbutton album">add from albam</ons-button>
@@ -124,30 +130,89 @@
     </ons-page>
   </template>
 
-  <template id="howahowa-dialog.html">
-      <ons-alert-dialog id="howahowa-dialog.html-page" modifier="rowfooter">
-        <div class="alert-dialog-title">Alert</div>
-        <div class="alert-dialog-content">
-          This dialog was created from a template
+  <template id="howahowa.html">
+    <ons-page id="howahowa.html-page">
+      <style>
+        .comment.sake .drawing {
+          margin: 30px auto;
+          width: 95vw;
+          height: 95vw;
+          border: solid 1px;
+          background-color: rgba(255, 255, 255, 0.3)
+        }
+
+        .comment.sake svg {
+          position: static;
+          width: 100%;
+          height: 100%;
+        }
+
+        .comment.sake ons-button {
+          margin: 5px;
+        }
+
+        .comment.sake .flex-wrapper {
+          display: flex;
+          flex-direction: row-reverse;
+        }
+
+        .comment.sake .preview {
+          width: 30vw;
+          height: 30vw;
+          margin: 5px;
+          border: solid 1px;
+          background-color: rgba(255, 255, 255, 0.3)
+        }
+
+        .comment.sake .preview svg {
+          width: 100%;
+          height: auto;
+        }
+      </style>
+
+      <div class="comment sake">
+        <div class="dial-holder">
+          <ons-speed-dial class="pallet" position="right top" direction="left">
+            <ons-fab class="fab">
+              <ons-icon icon="md-plus"></ons-icon>
+            </ons-fab>
+            <ons-speed-dial-item class="aroma">
+              香
+            </ons-speed-dial-item>
+            <ons-speed-dial-item class="umami">
+              旨
+            </ons-speed-dial-item>
+            <ons-speed-dial-item class="sour">
+              酸
+            </ons-speed-dial-item>
+            <ons-speed-dial-item class="sweet">
+              甘
+            </ons-speed-dial-item>
+          </ons-speed-dial>
         </div>
-        <div class="alert-dialog-footer">
-          <ons-alert-dialog-button onclick="fn.hideAlertDialog('howahowa-dialog.html-page')">Cancel</ons-alert-dialog-button>
-          <ons-alert-dialog-button onclick="fn.hideAlertDialog('howahowa-dialog.html-page')">OK</ons-alert-dialog-button>
+
+        <ons-button class="clearbutton">clear</ons-button>
+        <div id="drawing" class="drawing"></div>
+        <div class="flex-wrapper">
+          <ons-button class="savebutton">save</ons-button>
         </div>
-      </ons-alert-dialog>
-    </template>
-    <template id="comment-dialog.html">
-        <ons-alert-dialog id="comment-dialog.html-page" modifier="rowfooter">
-          <div class="alert-dialog-title">Alert</div>
-          <div class="alert-dialog-content">
-            This dialog was created from a template
-          </div>
-          <div class="alert-dialog-footer">
-            <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">Cancel</ons-alert-dialog-button>
-            <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">OK</ons-alert-dialog-button>
-          </div>
-        </ons-alert-dialog>
-      </template>
-    </body>
+        <div class="preview">
+        </div>
+      </div>
+    </ons-page>
+  </template>
+  <template id="comment-dialog.html">
+    <ons-alert-dialog id="comment-dialog.html-page" modifier="rowfooter">
+      <div class="alert-dialog-title">Alert</div>
+      <div class="alert-dialog-content">
+        This dialog was created from a template
+      </div>
+      <div class="alert-dialog-footer">
+        <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">Cancel</ons-alert-dialog-button>
+        <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">OK</ons-alert-dialog-button>
+      </div>
+    </ons-alert-dialog>
+  </template>
+</body>
 
 </html>

@@ -86,18 +86,86 @@ const createItemFromCamera = function (e) {
 };
 
 const createHowaHowaItem = function (e) {
-    const item = ons.createElement(`
-    <div class="item">
-        <div class="item-content">
-            item
-        </div>
-    </div>
-    `);
-    
-    fn.createAlertDialog("howahowa-dialog.html");
+    fn.loadPush("howahowa.html");
+};
+window.howahowa = {}
+window.howahowa.init = function () {
+    const draw_elem = document.querySelector("#drawing");
+    draw_elem.innerHTML = "";
 
-    grid.add(item, { index: 0 });
-    item.addClickListener({ handleEvent: itemContext, item: item });
+    //svg作成
+    const draw = SVG(draw_elem).size(300, 300);
+    draw.viewbox(0, 0, 300, 300);
+    draw.addClass("svg");
+
+    //ほわほわ収める場所
+    let svgElems = [];
+
+    //ボタン類
+    const fab = document.querySelector(".comment.sake .pallet .fab");
+    const sweet = document.querySelector(".comment.sake .pallet .sweet");
+    const sour = document.querySelector(".comment.sake .pallet .sour");
+    const umami = document.querySelector(".comment.sake .pallet .umami");
+    const aroma = document.querySelector(".comment.sake .pallet .aroma");
+
+    //イベント
+    fab.addEventListener("click", () => {
+        console.log("fab");
+    });
+    const addHowaButton = (elem, name, data) => {
+        elem.addEventListener("click", () => {
+            console.log(name);
+            svgElems.push(HowaHowa.create(name, draw, data));
+        });
+    };
+    addHowaButton(sweet, "甘味", { color: "#efb8db" });
+    addHowaButton(sour, "酸味", { color: "#edef67" });
+    addHowaButton(umami, "旨味", { color: "#75c15b" });
+    addHowaButton(aroma, "香り", { color: "#518787" });
+
+    //消す
+    const clear = document.querySelector(".comment.sake .clearbutton");
+    clear.addEventListener("click", () => {
+        draw_elem.children[0].innerHTML = "";
+        svgElems = [];
+    });
+
+    //セーブ
+    const save = document.querySelector(".comment.sake .savebutton");
+    const preview = document.querySelector(".comment.sake .preview");
+    save.addEventListener("click", () => {
+        preview.innerHTML = draw.svg();
+        const svg_pre = preview.querySelector("svg");
+        svg_pre.id = "preview";
+        // preventDefault
+        for (h of svgElems) {
+            // h.removeEvent();
+        }
+        const _howahowaElem = ons.createElement(draw.svg());
+        fn.setCurrentPageData({ howahowaElem: _howahowaElem });
+        fn.popPage();
+        console.log(_howahowaElem);
+    });
+}
+
+howahowa.postpop = (e) => {
+    console.log("onpostpop");
+    console.log(e);
+    const enterPage = e.enterPage;
+    const leavePage = e.leavePage;
+
+    if (leavePage.data.hasOwnProperty("howahowaElem")) {
+        const item = ons.createElement(`
+        <div class="item">
+            <div class="item-content">
+            </div>
+        </div>
+        `);
+        item.querySelector(".item-content").appendChild(leavePage.data.howahowaElem);
+        grid.add(item, { index: 0 });
+        item.addClickListener({ handleEvent: itemContext, item: item });
+        console.log(grid);
+    }
 };
 
 const createCommentItem = function (e) {
@@ -153,13 +221,21 @@ window.fn.loadPush = function (page, _data = {}, _animation = 'slide') {
     console.log(page);
     navi.pushPage(page, { animation: _animation, data: _data });
 };
+fn.popPage = async function (_data = {}, _animation = 'slide') {
+    const navi = document.getElementById('navi');
+    await navi.popPage({ animation: _animation, data: _data })
+}
 //load引数dataの取得
-fn.getPageData = function () {
+fn.getCurrentPageData = function () {
     const navi = document.querySelector("#navi");
     const data = navi.topPage.data;
     console.log(data);
     return data;
 };
+fn.setCurrentPageData = function (_data) {
+    const navi = document.querySelector("#navi");
+    Object.assign(navi.topPage.data, _data);
+}
 
 
 //ページ読み込み用
@@ -199,8 +275,19 @@ document.addEventListener('init', function (event) {
         case 'entry_shop.html-page': window.entry.shop.init(); break;
         case 'entry_sake.html-page': entry.sake.init(); break;
         case 'entry_cook.html-page': entry.cook.init(); break;
+        case 'howahowa.html-page': howahowa.init(); break;
     }
 });
+document.addEventListener("postpop", function(event){
+    const enterPage = event.enterPage;
+    const leavePage = event.leavePage;
+
+    if(enterPage.id === "home.html-page" && leavePage.id === "howahowa.html-page" ){
+        howahowa.postpop(event);
+    }
+});
+
+
 fn.init = function () {
     // console.log("fn.init");
     let cons = document.querySelector('.load.console');
@@ -212,19 +299,19 @@ fn.init = function () {
 };
 ///アラート読み込み用
 fn.createAlertDialog = function (pageid) {
-    var dialog = document.getElementById(pageid+"-page");
+    var dialog = document.getElementById(pageid + "-page");
     if (dialog) {
         dialog.show();
     } else {
         ons.createElement(pageid, { append: true })
-          .then(function(dialog) {
-            dialog.show();
-          });
-      }
+            .then(function (dialog) {
+                dialog.show();
+            });
+    }
 };
 fn.hideAlertDialog = function (pageid) {
     document
-        .getElementById(pageid+"-page")
+        .getElementById(pageid + "-page")
         .hide();
 };
 document.addEventListener('postshow', function (event) {

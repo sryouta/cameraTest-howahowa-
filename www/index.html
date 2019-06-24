@@ -100,10 +100,10 @@
   <template id="home.html">
     <ons-page id="home.html-page">
       <style>
-      svg{
-        width:50px;
-        height:50px;
-      }
+        svg {
+          width: 50px;
+          height: 50px;
+        }
       </style>
       <ons-button class="addbutton">add</ons-button>
       <ons-button class="addbutton camera">add from camera</ons-button>
@@ -205,11 +205,12 @@
     <ons-alert-dialog id="comment-dialog.html-page" modifier="rowfooter">
       <div class="alert-dialog-title">Alert</div>
       <div class="alert-dialog-content">
-        This dialog was created from a template
+        コメントを入力してください
+        <textarea class="textarea" rows="3" placeholder="お酒の話"></textarea>
       </div>
       <div class="alert-dialog-footer">
-        <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">Cancel</ons-alert-dialog-button>
-        <ons-alert-dialog-button onclick="fn.hideAlertDialog('comment-dialog.html')">OK</ons-alert-dialog-button>
+        <ons-alert-dialog-button class="cancel">Cancel</ons-alert-dialog-button>
+        <ons-alert-dialog-button class="ok">OK</ons-alert-dialog-button>
       </div>
     </ons-alert-dialog>
   </template>

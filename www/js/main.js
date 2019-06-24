@@ -19,7 +19,6 @@ home.init = function () {
     const addFromCameraButton = document.querySelector(".addbutton.camera");
     const addHowaHowaButton = document.querySelector(".addbutton.howahowa");
     const addCommentButton = document.querySelector(".addbutton.comment");
-    console.log(addFromAlbumButton);
     addFromAlbumButton.addEventListener("click", { handleEvent: createItemFromAlbum, });
     addFromCameraButton.addEventListener("click", { handleEvent: createItemFromCamera, });
     addHowaHowaButton.addEventListener("click", { handleEvent: createHowaHowaItem, });
@@ -169,16 +168,40 @@ howahowa.postpop = (e) => {
 };
 
 const createCommentItem = function (e) {
-    const item = ons.createElement(`
-    <div class="item">
-        <div class="item-content">
-            item
-        </div>
-    </div>
-    `);
-    fn.createAlertDialog("comment-dialog.html");
-    grid.add(item, { index: 0 });
-    item.addClickListener({ handleEvent: itemContext, item: item });
+    const initAlert = function (e) {
+        const text = e.querySelector(".textarea");
+        const okButton = e.querySelector(".ok");
+        const cancelButton = e.querySelector(".cancel");
+        text.value = "";
+
+        const onOkButton = function () {
+            console.log("aaa")
+            fn.hideDialog("comment-dialog.html", {
+                callback: () => {
+                    const item = ons.createElement(`
+                        <div class="item">
+                            <div class="item-content">
+                                ${text.value}
+                            </div>
+                        </div>
+                     `);
+                    grid.add(item, { index: 0 });
+                    item.addClickListener({ handleEvent: itemContext, item: item });
+                }
+            });
+            okButton.removeEventListener("click", onOkButton, false);
+            cancelButton.removeEventListener("click", onCancelButton, false);
+        };
+        const onCancelButton = function () {
+            fn.hideDialog("comment-dialog.html");
+                okButton.removeEventListener("click", onOkButton, false);
+                cancelButton.removeEventListener("click", onCancelButton, false);
+        };
+        okButton.addEventListener("click", onOkButton, false);
+        cancelButton.addEventListener("click", onCancelButton, false);
+    };
+
+    fn.createDialog("comment-dialog.html", { callback: initAlert });
 };
 
 
@@ -278,11 +301,11 @@ document.addEventListener('init', function (event) {
         case 'howahowa.html-page': howahowa.init(); break;
     }
 });
-document.addEventListener("postpop", function(event){
+document.addEventListener("postpop", function (event) {
     const enterPage = event.enterPage;
     const leavePage = event.leavePage;
 
-    if(enterPage.id === "home.html-page" && leavePage.id === "howahowa.html-page" ){
+    if (enterPage.id === "home.html-page" && leavePage.id === "howahowa.html-page") {
         howahowa.postpop(event);
     }
 });
@@ -298,21 +321,21 @@ fn.init = function () {
     fn.load("home.html");
 };
 ///アラート読み込み用
-fn.createAlertDialog = function (pageid) {
+fn.createDialog = function (pageid, options = {}) {
     var dialog = document.getElementById(pageid + "-page");
     if (dialog) {
-        dialog.show();
-    } else {
+        dialog.show(options);
+    } else {///loading from template
         ons.createElement(pageid, { append: true })
             .then(function (dialog) {
-                dialog.show();
+                dialog.show(options);
             });
     }
 };
-fn.hideAlertDialog = function (pageid) {
+fn.hideDialog = function (pageid, options = {}) {
     document
         .getElementById(pageid + "-page")
-        .hide();
+        .hide(options);
 };
 document.addEventListener('postshow', function (event) {
     let page = event.target;

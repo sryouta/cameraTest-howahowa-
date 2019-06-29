@@ -170,7 +170,11 @@ howahowa.postpop = (e) => {
             </div>
         </div>
         `);
-        item.querySelector(".item-content").appendChild(leavePage.data.howahowaElem);
+        const howa = leavePage.data.howahowaElem;
+        console.log(howa);
+        item.querySelector(".item-content").appendChild(howa);
+        howa.style.width = "100px";
+        howa.style.height = "100px";
 
         grid.add(item, { index: 0 });
         item.addClickListener({ handleEvent: itemContext, item: item });

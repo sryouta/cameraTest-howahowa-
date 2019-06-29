@@ -3,6 +3,7 @@
 camera = {};
 camera.photoIndex = 0;
 
+const myevent = new Event("inititem");
 
 /////////////////カメラ、addEventListenerの第二引数の例。////////////////////
 //  argObj = {
@@ -12,9 +13,11 @@ camera.photoIndex = 0;
 //     sourceType: Camera.PictureSourceType.CAMERA,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
 //   }
 
+
 ///指定したDiv要素にカメラ画像を追加＋ニフクラにアップロード
-camera.insertImage = function (item,fileName,options) {
+camera.insertImage = function (item, fileName, options) {
   //cordovaのcamera非対応の場合はalert
+
   if (!navigator.hasOwnProperty("camera")) {
     alert("お使いの端末ではカメラが利用できません。")
   } else {
@@ -37,33 +40,40 @@ camera.insertImage = function (item,fileName,options) {
     let optArr = ["quality", "destinationType", "sourceType", "allowEdit", "encodingType", "targetWidth", "targetHeight", "mediaType", "correctOrientation", "saveToPhotoAlbum", "popoverOptions", "cameraDirection"];
     for (k of Object.keys(options)) {
       if (optArr.includes(k)) {
-        console.log("camera options key:"+k+" value:" + options[k]);
+        console.log("camera options key:" + k + " value:" + options[k]);
         option[k] = options[k];
       }
     }
     ///カメラ起動
     navigator.camera.getPicture(onSuccess, onError, option);
 
-  //getPicture成功時に呼び出されるコールバック関数
-  function onSuccess(imageData) {
-    // 画像を表示
-    const elem = item
-    const image = document.createElement("img")
-    image.src = "data:image/jpeg;base64," + imageData;
-    image.style.width = "100%";
-    image.style.position = "absolute";
-    image.style.top = "0px";
-    image.style.right = "0px";
-    elem.appendChild(image)
-    //NCMBにアップロード
-    console.log(fileName + elem)
-    fmbaas.uploadImage(imageData, fileName, elem);
-  }
-  //getPicture失敗時に呼び出されるコールバック関数
-  function onError(message) {
-    alert("カメラエラー: " + message);
-  }
-};
+    //getPicture成功時に呼び出されるコールバック関数
+    function onSuccess(imageData) {
+
+      // 画像を表示
+      const elem = item
+      const image = document.createElement("img")
+      image.src = "data:image/jpeg;base64," + imageData;
+      image.style.width = "100%";
+      // image.style.position = "absolute";
+      // image.style.top = "0px";
+      // image.style.right = "0px";
+      image.style.display = "block";
+      elem.appendChild(image)
+      //NCMBにアップロード
+      console.log(fileName + elem)
+      //inititemイベント追加、発火
+      console.log(myevent);
+      elem.dispatchEvent(myevent);
+
+      //アップロード
+      return fmbaas.uploadImage(imageData, fileName, elem);
+    }
+    //getPicture失敗時に呼び出されるコールバック関数
+    function onError(message) {
+      alert("カメラエラー: " + message);
+    }
+  };
 
 }
 function createNewFileEntry(imageURI) {

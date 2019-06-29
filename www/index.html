@@ -41,6 +41,8 @@
 </head>
 
 <body>
+    <ons-navigator id="navi" page="load.html"></ons-navigator>
+
   <!-- side menu -->
   <ons-splitter>
     <ons-splitter-side id="menu" side="left" width="220px" collapse>
@@ -61,7 +63,6 @@
       </ons-page>
     </ons-splitter-side>
     <ons-splitter-content>
-      <ons-navigator id="navi" page="load.html"></ons-navigator>
     </ons-splitter-content>
   </ons-splitter>
   <!--------------------- 1.load page --------------------->
@@ -101,8 +102,13 @@
     <ons-page id="home.html-page">
       <style>
         svg {
-          width: 50px;
-          height: 50px;
+          width: 98px;
+          height: 98px;
+        }
+        img {
+          width: 98px;
+          height: 98px;
+          display: block;
         }
       </style>
       <ons-button class="addbutton">add</ons-button>

@@ -2,21 +2,27 @@
 
 window.fmbaas = {};
 
+///dateとusernameを利用してユニークなファイル名を生成する
+fmbaas.getUniqueName = (userName, modifier) => {
+  let fileName = ""
+  const dt = new Date();
+  return `${dt.getFullYear()}${dt.getMonth() + 1}${dt.getDate()}${dt.getHours()}${dt.getMinutes()}${dt.getSeconds()}${userName}${modifier}`
+};
+
 //userdata受信
 window.fmbaas.getUserData = (userName) => {
   let UserData = ncmb.DataStore("UserData");
   UserData.equalTo("userName", userName)
     .fetchAll()
-    .then(function(results){
+    .then(function (results) {
       userData = results;
       console.log("userdata successed.");
     })
-    .catch(function(err){
+    .catch(function (err) {
       console.log(err);
     });
 
 }
-
 
 ///NCMBにアクセス
 window.fmbaas.ncmbGreet = () => {

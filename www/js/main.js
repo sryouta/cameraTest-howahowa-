@@ -28,6 +28,8 @@ home.init = function () {
     console.log("Onsen UI is ready!");
 };
 
+
+
 ///Itemのコンテキストメニュー表示
 const itemContext = function (e) {
     if (!this.moveFlag) {
@@ -54,20 +56,28 @@ HTMLElement.prototype.addClickListener = function (listener) {
     //    this.addEventListener("touchend", listener);
 };
 
+const onInitItem = function (item) {
+    item.addEventListener("inititem", (e) => {
+        console.log("eventListened")
+        grid.add(e.target, { index: 0 });
+        item.addClickListener({ handleEvent: itemContext, item: item });
+    });
+};
+
 ///Item追加
 const createItemFromAlbum = function (e) {
     const item = ons.createElement(`
     <div class="item">
-        <div class="item-content">
-            item
-        </div>
     </div>
     `);
-    camera.insertImage(item.querySelector(".item-content"), "test.png", {
+
+    onInitItem(item);
+
+    ///insertImage　引数：imgを挿入するDiv要素、ファイル名、カメラオプション
+    camera.insertImage(item, fmbaas.getUniqueName("user", "image") + ".png", {
         sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    })
-    grid.add(item, { index: 0 });
-    item.addClickListener({ handleEvent: itemContext, item: item });
+    });
+
 };
 const createItemFromCamera = function (e) {
     const item = ons.createElement(`
@@ -161,9 +171,9 @@ howahowa.postpop = (e) => {
         </div>
         `);
         item.querySelector(".item-content").appendChild(leavePage.data.howahowaElem);
+
         grid.add(item, { index: 0 });
         item.addClickListener({ handleEvent: itemContext, item: item });
-        console.log(grid);
     }
 };
 
@@ -194,8 +204,8 @@ const createCommentItem = function (e) {
         };
         const onCancelButton = function () {
             fn.hideDialog("comment-dialog.html");
-                okButton.removeEventListener("click", onOkButton, false);
-                cancelButton.removeEventListener("click", onCancelButton, false);
+            okButton.removeEventListener("click", onOkButton, false);
+            cancelButton.removeEventListener("click", onCancelButton, false);
         };
         okButton.addEventListener("click", onOkButton, false);
         cancelButton.addEventListener("click", onCancelButton, false);
@@ -301,6 +311,8 @@ document.addEventListener('init', function (event) {
         case 'howahowa.html-page': howahowa.init(); break;
     }
 });
+
+
 document.addEventListener("postpop", function (event) {
     const enterPage = event.enterPage;
     const leavePage = event.leavePage;

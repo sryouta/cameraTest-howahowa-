@@ -3,7 +3,6 @@
 camera = {};
 camera.photoIndex = 0;
 
-const myevent = new Event("inititem");
 
 /////////////////カメラ、addEventListenerの第二引数の例。////////////////////
 //  argObj = {
@@ -15,7 +14,7 @@ const myevent = new Event("inititem");
 
 
 ///指定したDiv要素にカメラ画像を追加＋ニフクラにアップロード
-camera.insertImage = function (item, fileName, options) {
+camera.insertImage = function (item, fileName, options, successCallback=false) {
   //cordovaのcamera非対応の場合はalert
 
   if (!navigator.hasOwnProperty("camera")) {
@@ -24,7 +23,7 @@ camera.insertImage = function (item, fileName, options) {
     ///デフォルトの設定
     const option = {
       quality: 50,
-      destinationType: Camera.DestinationType.DATA_URL,//.DATA_URL or .FILE_URI
+      destinationType: Camera.DestinationType.FILE_URI,//.DATA_URL or .FILE_URI
       sourceType: Camera.PictureSourceType.CAMERA,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
       allowEdit: true,//andoroidでは無視される(大嘘)
       // encodingType: Camera.EncodingType.JPEG,
@@ -45,29 +44,23 @@ camera.insertImage = function (item, fileName, options) {
       }
     }
     ///カメラ起動
-    navigator.camera.getPicture(onSuccess, onError, option);
+    navigator.camera.getPicture(typeof successCallback=="function"? successCallback : onSuccess, onError, option);
 
     //getPicture成功時に呼び出されるコールバック関数
-    function onSuccess(imageData) {
-
+    function onSuccess(imageURI) {
       // 画像を表示
-      const elem = item
       const image = document.createElement("img")
-      image.src = "data:image/jpeg;base64," + imageData;
+      image.src = imageURI;
       image.style.width = "100%";
-      // image.style.position = "absolute";
-      // image.style.top = "0px";
-      // image.style.right = "0px";
       image.style.display = "block";
-      elem.appendChild(image)
-      //NCMBにアップロード
-      console.log(fileName + elem)
+      item.appendChild(image);
+
       //inititemイベント追加、発火
       console.log(myevent);
       elem.dispatchEvent(myevent);
 
       //アップロード
-      return fmbaas.uploadImage(imageData, fileName, elem);
+      //return fmbaas.uploadImage(imageData, fileName, elem);
     }
     //getPicture失敗時に呼び出されるコールバック関数
     function onError(message) {

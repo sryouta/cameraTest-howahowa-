@@ -63,20 +63,62 @@ const onInitItem = function (item) {
         item.addClickListener({ handleEvent: itemContext, item: item });
     });
 };
+const addImageToGrid = function (imageURI) {
+    const item = document.createElement("div");
+    item.className = "item";
+    const image = document.createElement("img");
+    image.src = imageURI;
+    image.style.width = "100px";
+    image.style.height = "100px";
+    image.style.objectFit = "cover";
+
+    item.appendChild(image);
+    grid.add(item, { index: 0 });
+    item.addClickListener({ handleEvent: itemContext, item: item });
+};
+
+const cameraSuccess = function (imageURI) {
+    // 画像を表示
+    addImageToGrid(imageURI);
+
+    //URIをスライスして、ファイルシステム(ディレクトリエントリ)を取得
+    window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("/")), function (fileSystem) {
+        getFilesFromDirectory(fileSystem)
+    }, function (error) {
+        console.log('ファイル存在確認中にエラーが発生', error.code);
+    });
+    function getFilesFromDirectory(fileSystem) {
+        // FileSystemオブジェクトのrootプロパティには，DirectoryEntryオブジェクトが格納されている
+        //　↑　なぜかrootがなかったので、ディレクトリエントリまんまを投げてきている
+        var directoryEntry = fileSystem;
+        // DirecotryEntryオブジェクトのcreateReaderメソッドを使い，ディレクトリ内のファイルを読み込むためのDirectoryReaderオブジェクトを作成
+        var directoryReader = directoryEntry.createReader();
+        // DirectoryReaderオブジェクトのreadEntriesメソッドを使い，ディレクトリ内のエントリを読み込み，コールバック関数に配列として渡す
+        directoryReader.readEntries(putFileName, fail);
+    }
+    function putFileName(entries) {
+        // ディレクトリ内のエントリがFileEntryオブジェクトまたはDirectoryEntryオブジェクトとして配列で渡される
+        for(e of entries){
+            if(e.isFile){
+                console.log(e.nativeURL);
+                addImageToGrid(e.nativeURL);
+            }
+        }
+    }
+    function fail(error) {
+        // エラーについては http://docs.phonegap.com/en/2.0.0/cordova_file_file.md.html#FileError を参照
+        alert('エラーが発生しました。エラーコード: ' + error.code);
+    }
+};
 
 ///Item追加
 const createItemFromAlbum = function (e) {
-    const item = ons.createElement(`
-    <div class="item">
-    </div>
-    `);
 
-    onInitItem(item);
-
+    item = 0
     ///insertImage　引数：imgを挿入するDiv要素、ファイル名、カメラオプション
     camera.insertImage(item, fmbaas.getUniqueName("user", "image") + ".png", {
         sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    });
+    }, cameraSuccess);
 
 };
 const createItemFromCamera = function (e) {

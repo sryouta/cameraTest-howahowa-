@@ -1,11 +1,14 @@
 // This is a JavaScript file
 
+///一つのほわほわを持っている（要SVG.js）
 class HowaHowa {
+  ///HowaHowa.createとnew HowaHowaにはそんなに違いはない（と思う）
   static create(name, draw, data) {
     console.log(name);
     const howahowa = new HowaHowa(name, draw, data);
     return howahowa;
   }
+  ///コンストラクタ。たしかdataにhowahowaJSON渡せば勝手にその通り作ってくれた、と思う
   constructor(name, draw, data = {}) {
     this.data = this.dataInit(name, data);
     this.howa = this.makeHowa(draw);
@@ -112,8 +115,10 @@ class HowaHowa {
     // }
     //}
   }
+  ///ドラッグ終了後
   dragEnd(event, draw) {
     console.log(`dragend: ${this.howa.dragTime} times moved`);
+    ///
     this.howa.pathElem.animate(100).opacity(0.8);
     if (this.howa.dragTime < 8 && this.holdTime <= 1000) {//移動してない(dragMove=3)+ロングタップでないときはクリックイベント
       console.log("click");
@@ -138,6 +143,8 @@ class HowaHowa {
     clearInterval(this.interval);
     this.holdTime = 0;
   }
+  ///楕円⇄ギザギザのSVG
+  //@@@@@@@@じまじまさせる
   plotData(index = null) {
     const plot = [`
       m 120.19957,409.78803 -14.46095,-3.16695 -13.472279,-4.51728 -12.43105,-5.78442 -12.11674,-6.51241 -9.292491,-7.18613 -8.923607,-9.7101 -5.808368,-9.78051 -4.12607,-9.92853 -1.170173,-10.74836 1.161154,-10.20646 3.711627,-9.00989 6.197248,-10.66073 8.294456,-9.46511 9.993119,-7.51769 10.417967,-6.30766 13.96612,-5.80822 13.213157,-4.05692 14.87731,-3.5193 15.50978,-1.99989 14.30691,-0.67675 15.55692,0.67675 14.25976,1.99989 13.58335,3.64794 14.50706,3.92828 11.81956,5.05061 12.56456,7.06527 8.73042,7.26515 9.55714,9.71765 5.18708,9.01923 4.72178,10.65139 0.6561,10.459 -0.66511,10.49582 -4.3786,10.30734 -5.55582,9.4017 -8.42039,9.58516 -9.79569,7.31107 -11.99047,6.89121 -12.55734,5.40562 -14.10322,4.39101 -13.82962,3.29322 -14.32854,1.72595 -15.51847,0.72113 -16.45809,-0.41665 z`, `

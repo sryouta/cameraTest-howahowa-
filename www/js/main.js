@@ -1,5 +1,7 @@
 window.home = {};
 
+user = "testUser"
+
 home.init = function () {
     ///Muuriの定義
     window.grid = new Muuri('.grid', {
@@ -63,64 +65,72 @@ const onInitItem = function (item) {
         item.addClickListener({ handleEvent: itemContext, item: item });
     });
 };
+//Itemに追加　引数はURI
 const addImageToGrid = function (imageURI) {
+    console.log("src=" + imageURI);
+    //div.itemを作成
     const item = document.createElement("div");
     item.className = "item";
+    //divの中身のimg
     const image = document.createElement("img");
     image.src = imageURI;
     image.style.width = "100px";
     image.style.height = "100px";
     image.style.objectFit = "cover";
-
     item.appendChild(image);
+    //gridに追加
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
 
+///カメラ成功時　引数はURI　→　ファイルエントリを作成　→　PERSISTANTに移動　→　Itemに追加　→　Blob化　→　NCMBアップロード
 const cameraSuccess = function (imageURI) {
-    // 画像を表示
-    addImageToGrid(imageURI);
-
-    //URIをスライスして、ファイルシステム(ディレクトリエントリ)を取得
-    window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("/")), function (fileSystem) {
-        getFilesFromDirectory(fileSystem)
-    }, function (error) {
-        console.log('ファイル存在確認中にエラーが発生', error.code);
+    // Itemに追加
+    window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("?")), function (fileSystem) {
+        console.log(fileSystem.name);
+        addImageToGrid(fileSystem.nativeURL);
     });
-    function getFilesFromDirectory(fileSystem) {
-        // FileSystemオブジェクトのrootプロパティには，DirectoryEntryオブジェクトが格納されている
-        //　↑　なぜかrootがなかったので、ディレクトリエントリまんまを投げてきている
-        var directoryEntry = fileSystem;
-        // DirecotryEntryオブジェクトのcreateReaderメソッドを使い，ディレクトリ内のファイルを読み込むためのDirectoryReaderオブジェクトを作成
-        var directoryReader = directoryEntry.createReader();
-        // DirectoryReaderオブジェクトのreadEntriesメソッドを使い，ディレクトリ内のエントリを読み込み，コールバック関数に配列として渡す
-        directoryReader.readEntries(putFileName, fail);
-    }
-    function putFileName(entries) {
-        // ディレクトリ内のエントリがFileEntryオブジェクトまたはDirectoryEntryオブジェクトとして配列で渡される
-        for(e of entries){
-            if(e.isFile){
-                console.log(e.nativeURL);
-                addImageToGrid(e.nativeURL);
-            }
-        }
-    }
-    function fail(error) {
-        // エラーについては http://docs.phonegap.com/en/2.0.0/cordova_file_file.md.html#FileError を参照
-        alert('エラーが発生しました。エラーコード: ' + error.code);
-    }
+    // //URIをスライスして、ファイルシステム(ディレクトリエントリ)を取得
+    // window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("/")), function (fileSystem) {
+    //     getFilesFromDirectory(fileSystem,filename)
+    // }, function (error) {
+    //     console.log('ファイル存在確認中にエラーが発生', error.code);
+    // });
+    // function getFilesFromDirectory(fileSystem) {
+    //     // FileSystemオブジェクトのrootプロパティには，DirectoryEntryオブジェクトが格納されている
+    //     //　↑　なぜかrootがなかったので、ディレクトリエントリまんまを投げてきている
+    //     var directoryEntry = fileSystem;
+    //     // DirecotryEntryオブジェクトのcreateReaderメソッドを使い，ディレクトリ内のファイルを読み込むためのDirectoryReaderオブジェクトを作成
+    //     var directoryReader = directoryEntry.createReader();
+    //     // DirectoryReaderオブジェクトのreadEntriesメソッドを使い，ディレクトリ内のエントリを読み込み，コールバック関数に配列として渡す
+    //     directoryReader.readEntries(putFileName, fail);
+
+    //     function putFileName(entries) {
+    //         // ディレクトリ内のエントリがFileEntryオブジェクトまたはDirectoryEntryオブジェクトとして配列で渡される
+    //         for (e of entries) {
+    //             if (e.isFile) {
+    //                 addImageToGrid(e.nativeURL);
+    //             }
+    //         }
+    //     }
+    //     function fail(error) {
+    //         // エラーについては http://docs.phonegap.com/en/2.0.0/cordova_file_file.md.html#FileError を参照
+    //         alert('エラーが発生しました。エラーコード: ' + error.code);
+    //     }
+    // }
 };
 
-///Item追加
+///Albamから
 const createItemFromAlbum = function (e) {
 
     item = 0
-    ///insertImage　引数：imgを挿入するDiv要素、ファイル名、カメラオプション
+    ///insertImage　引数：imgを挿入するDiv要素、ファイル名、カメラオプション、カメラ成功時の動作
     camera.insertImage(item, fmbaas.getUniqueName("user", "image") + ".png", {
         sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     }, cameraSuccess);
 
 };
+///Cameraから
 const createItemFromCamera = function (e) {
     const item = ons.createElement(`
     <div class="item">
@@ -135,30 +145,28 @@ const createItemFromCamera = function (e) {
     grid.add(item, { index: 0 });
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
-
+///howahowa
 const createHowaHowaItem = function (e) {
+    ///howahowa.htmlに移動して編集
     fn.loadPush("howahowa.html");
 };
+///howahowa.htmlでの動作
 window.howahowa = {}
 window.howahowa.init = function () {
     const draw_elem = document.querySelector("#drawing");
     draw_elem.innerHTML = "";
-
     //svg作成
     const draw = SVG(draw_elem).size(300, 300);
     draw.viewbox(0, 0, 300, 300);
     draw.addClass("svg");
-
     //ほわほわ収める場所
     let svgElems = [];
-
     //ボタン類
     const fab = document.querySelector(".comment.sake .pallet .fab");
     const sweet = document.querySelector(".comment.sake .pallet .sweet");
     const sour = document.querySelector(".comment.sake .pallet .sour");
     const umami = document.querySelector(".comment.sake .pallet .umami");
     const aroma = document.querySelector(".comment.sake .pallet .aroma");
-
     //イベント
     fab.addEventListener("click", () => {
         console.log("fab");
@@ -173,55 +181,62 @@ window.howahowa.init = function () {
     addHowaButton(sour, "酸味", { color: "#edef67" });
     addHowaButton(umami, "旨味", { color: "#75c15b" });
     addHowaButton(aroma, "香り", { color: "#518787" });
-
     //消す
     const clear = document.querySelector(".comment.sake .clearbutton");
     clear.addEventListener("click", () => {
         draw_elem.children[0].innerHTML = "";
         svgElems = [];
     });
-
-    //セーブ
+    //セーブボタン押したとき
     const save = document.querySelector(".comment.sake .savebutton");
     const preview = document.querySelector(".comment.sake .preview");
     save.addEventListener("click", () => {
         preview.innerHTML = draw.svg();
         const svg_pre = preview.querySelector("svg");
         svg_pre.id = "preview";
-        // preventDefault
+
+        const dataset = [];
+        // preventDefault,datasetを追加
         for (h of svgElems) {
-            // h.removeEvent();
+            h.removeEvent();
+            dataset.push(h.data);
         }
         const _howahowaElem = ons.createElement(draw.svg());
-        fn.setCurrentPageData({ howahowaElem: _howahowaElem });
+        fn.setCurrentPageData({ howahowaElem: _howahowaElem, howaData: dataset });
         fn.popPage();
         console.log(_howahowaElem);
     });
 }
-
+//howahowa.htmlが閉じたら、itemにSVGを追加する
 howahowa.postpop = (e) => {
     console.log("onpostpop");
     console.log(e);
+    ////enterPageはhome.html
     const enterPage = e.enterPage;
+    ///leavePageはhowahowa.html　　.dataにhowahowaElem,howahowaJSON
     const leavePage = e.leavePage;
-
+    ///Cancelしたらitem追加は起きない
     if (leavePage.data.hasOwnProperty("howahowaElem")) {
         const item = ons.createElement(`
-        <div class="item">
-            <div class="item-content">
-            </div>
-        </div>
+        <div class="item"></div>
         `);
         const howa = leavePage.data.howahowaElem;
         console.log(howa);
-        item.querySelector(".item-content").appendChild(howa);
+        item.appendChild(howa);
         howa.style.width = "100px";
         howa.style.height = "100px";
-
         grid.add(item, { index: 0 });
         item.addClickListener({ handleEvent: itemContext, item: item });
+        ///NCMBにアップロードする
+    }
+    if (leavePage.data.hasOwnProperty("howaData")) {
+        console.log(JSON.parse(JSON.stringify(leavePage.data.howaData)));
+        fmbaas.upload(user, "howahowa", { result: leavePage.data.howaData });
+
     }
 };
+
+
 
 const createCommentItem = function (e) {
     const initAlert = function (e) {
@@ -231,7 +246,6 @@ const createCommentItem = function (e) {
         text.value = "";
 
         const onOkButton = function () {
-            console.log("aaa")
             fn.hideDialog("comment-dialog.html", {
                 callback: () => {
                     const item = ons.createElement(`
@@ -247,6 +261,7 @@ const createCommentItem = function (e) {
             });
             okButton.removeEventListener("click", onOkButton, false);
             cancelButton.removeEventListener("click", onCancelButton, false);
+            fmbaas.upload(user,"comment",text.value);
         };
         const onCancelButton = function () {
             fn.hideDialog("comment-dialog.html");

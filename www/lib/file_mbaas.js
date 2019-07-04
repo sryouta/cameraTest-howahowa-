@@ -23,6 +23,20 @@ window.fmbaas.getUserData = (userName) => {
     });
 
 }
+//userdata受信
+fmbaas.upload = function (user = "testuser", data_type, data) {
+  const UserData = ncmb.DataStore(user);
+  const userData = new UserData;
+
+  if (data_type === "howahowa") {
+    userData.set("howahowa", JSON.parse(JSON.stringify(data)))
+      .save();
+  }else if(data_type === "comment"){
+    userData.set("comment",data)
+    .save();
+  }
+
+}
 
 ///NCMBにアクセス
 window.fmbaas.ncmbGreet = () => {

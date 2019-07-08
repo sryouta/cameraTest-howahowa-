@@ -122,13 +122,32 @@ const cameraSuccess = function (imageURI) {
 
 ///Albamから
 const createItemFromAlbum = function (e) {
-
-    item = 0
-    ///insertImage　引数：imgを挿入するDiv要素、ファイル名、カメラオプション、カメラ成功時の動作
-    camera.insertImage(item, fmbaas.getUniqueName("user", "image") + ".png", {
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    }, cameraSuccess);
-
+    const options = {
+        sourceType: Camera.PictureSourceType.SAVEDPHOTOALBUM,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
+    }
+    const item = ons.createElement(`
+    <div class="item">
+        <img src="">
+    </div>
+    `);
+    const fileName = fmbaas.getUniqueName("user", "image") + ".png";
+    camera.getImage(options)
+        .then((imageURI_old) => {
+            console.log(imageURI_old);
+            return fmbaas.fileMove(imageURI_old, cordova.file.dataDirectory, fileName);
+        })///ここまで通ったっぽい！
+        .then((fileEntry) => {///この後は、div.item要素作成→アップロードSVG起こす→grid.add→アップロード→アップロード処理SVG消す
+            console.log(fileEntry.fullPath);
+            item.querySelector("img").src = fileEntry.fullPath;
+            grid.add(item, { index: 0 });
+            return fmbaas.readFile(fileEntry, 'image/png');
+        })
+        .then((imageData) => {
+            fmbaas.uploadImage(imageData, "Blob", fileName, item);
+        })
+        .catch(err => {
+            console.log("Error" + err);
+        });
 };
 ///Cameraから
 const createItemFromCamera = function (e) {
@@ -261,7 +280,7 @@ const createCommentItem = function (e) {
             });
             okButton.removeEventListener("click", onOkButton, false);
             cancelButton.removeEventListener("click", onCancelButton, false);
-            fmbaas.upload(user,"comment",text.value);
+            fmbaas.upload(user, "comment", text.value);
         };
         const onCancelButton = function () {
             fn.hideDialog("comment-dialog.html");

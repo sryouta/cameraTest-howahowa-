@@ -3,20 +3,11 @@
 camera = {};
 camera.photoIndex = 0;
 
-
-/////////////////カメラ、addEventListenerの第二引数の例。////////////////////
-//  argObj = {
-//     elem: document.querySelector('#showImage'),
-//     fileName: 'test1.png',
-//     allowEdit: true,
-//     sourceType: Camera.PictureSourceType.CAMERA,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
-//   }
-
-
-///指定したDiv要素にカメラ画像を追加＋ニフクラにアップロード
-camera.insertImage = function (item, fileName, options, successCallback=false) {
+///camera.getImage
+///arg: options = {} cordova camera options
+///ret: promise
+camera.getImage = (options) => new Promise((resolve, reject) => {
   //cordovaのcamera非対応の場合はalert
-
   if (!navigator.hasOwnProperty("camera")) {
     alert("お使いの端末ではカメラが利用できません。")
   } else {
@@ -26,7 +17,7 @@ camera.insertImage = function (item, fileName, options, successCallback=false) {
       destinationType: Camera.DestinationType.FILE_URI,//.DATA_URL or .FILE_URI
       sourceType: Camera.PictureSourceType.CAMERA,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
       allowEdit: true,//andoroidでは無視される(大嘘)
-      // encodingType: Camera.EncodingType.JPEG,
+      encodingType: Camera.EncodingType.PNG,
       // targetWidth: 100,targetHeight: 100,
       mediatype: Camera.MediaType.PICTURE,//PHOTOLIBRARYまたはSAVEDPHOTOALBUMのみ有効。PICTURE,VIDEO,ALLMEDIA
       correctOrientation: true,//写真が撮影されたときと同じ向きになるよう写真を回転させます。
@@ -44,31 +35,11 @@ camera.insertImage = function (item, fileName, options, successCallback=false) {
       }
     }
     ///カメラ起動
-    navigator.camera.getPicture(typeof successCallback=="function"? successCallback : onSuccess, onError, option);
+    navigator.camera.getPicture(resolve, reject, option);
+  }
+});
 
-    //getPicture成功時に呼び出されるコールバック関数
-    function onSuccess(imageURI) {
-      // 画像を表示
-      const image = document.createElement("img")
-      image.src = imageURI;
-      image.style.width = "100%";
-      image.style.display = "block";
-      item.appendChild(image);
 
-      //inititemイベント追加、発火
-      console.log(myevent);
-      elem.dispatchEvent(myevent);
-
-      //アップロード
-      //return fmbaas.uploadImage(imageData, fileName, elem);
-    }
-    //getPicture失敗時に呼び出されるコールバック関数
-    function onError(message) {
-      alert("カメラエラー: " + message);
-    }
-  };
-
-}
 function createNewFileEntry(imageURI) {
   window.resolveLocalFileSystemURL(cordova.file.cacheDirectory, function success(dirEntry) {
 

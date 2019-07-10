@@ -17,7 +17,7 @@ camera.getImage = (options) => new Promise((resolve, reject) => {
       destinationType: Camera.DestinationType.FILE_URI,//.DATA_URL or .FILE_URI
       sourceType: Camera.PictureSourceType.CAMERA,//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
       allowEdit: true,//andoroidでは無視される(大嘘)
-      encodingType: Camera.EncodingType.PNG,
+      encodingType: Camera.EncodingType.JPEG,
       // targetWidth: 100,targetHeight: 100,
       mediatype: Camera.MediaType.PICTURE,//PHOTOLIBRARYまたはSAVEDPHOTOALBUMのみ有効。PICTURE,VIDEO,ALLMEDIA
       correctOrientation: true,//写真が撮影されたときと同じ向きになるよう写真を回転させます。

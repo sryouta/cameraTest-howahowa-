@@ -73,7 +73,7 @@ class HowaHowa {
     this.howa.pathElem.animate(100).opacity(1);
     this.interval = setInterval(() => {
       this.holdTime += 100;
-      if (this.holdTime > 1000) {
+      if (this.holdTime > 500) {
         let s = this.data.strength;
         if (s < 2) {
           s += 0.08;
@@ -97,23 +97,6 @@ class HowaHowa {
     if (this.howa.dragTime === 20) {
       clearInterval(this.interval);
     }
-    // if (this.howa.dragTime > 150) {
-    //   let s = this.data.strength;
-    //   if (s < 2) {
-    //     s += 0.01;
-    //     this.howa.pathElem.scale(s + 1);
-    //   } else if (~~s === 2) {
-    //     s += 0.01;
-    //     this.howa.pathElem.stroke({ color: "black", width: 3 });
-    //   } else if (s <= 3) {
-    //     s += 0.01;
-    //   } else {
-    //     s = 0;
-    //     this.howa.pathElem.stroke({ color: "none" });
-    //   }
-    //   this.data.strength = s;
-    // }
-    //}
   }
   ///ドラッグ終了後
   dragEnd(event, draw) {

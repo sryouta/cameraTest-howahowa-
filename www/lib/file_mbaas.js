@@ -39,17 +39,26 @@ window.fmbaas.getUserData = (userName) => {
 
 };
 //userdata受信
-fmbaas.upload = function (user = "testuser", data_type, data) {
+fmbaas.upload = function (user = "testuser", data_type = "none", data) {
   const UserData = ncmb.DataStore(user);
   const userData = new UserData;
-
-  if (data_type === "howahowa") {
-    userData.set("howahowa", JSON.parse(JSON.stringify(data)))
-      .save();
-  } else if (data_type === "comment") {
-    userData.set("comment", data)
-      .save();
+  if (typeof data != "string") {
+    data = JSON.parse(JSON.stringify(data));
   }
+  userData.set(data_type, data)
+    .save();
+  // if (data_type === "howahowa") {
+  //   userData.set("howahowa", JSON.parse(JSON.stringify(data)))
+  //     .save();
+  // } else if (data_type === "comment") {
+  //   userData.set("comment", data)
+  //     .save();
+  // } else if (data_type === "image") {
+  //   userData.set("image", data)
+  //     .save();
+  // }else{
+  //   console.log("None type data"+data_type);
+  // }
 
 }
 
@@ -140,7 +149,7 @@ fmbaas.uploadImage = (imageData, imageDataType, fileName, wrapperDiv, ) => {
     const byteCharacters = fmbaas.toBlob(imageData);
   } else if (imageDataType === "Blob") {
     const byteCharacters = imageData;
-  }else{
+  } else {
     const byteCharacters = "";
     console.log("  \"Base64\" or \"Blob\"   ")
   }

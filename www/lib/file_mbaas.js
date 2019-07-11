@@ -61,11 +61,21 @@ fmbaas.upload = function (user = "testuser", data_type = "none", data) {
   // }
 
 }
+fmbaas.ncmbGreet = ()=>{
+ //APIキーを取得
+  let req = new XMLHttpRequest();
+  req.open("GET","predata/apikeys.json");
+  req.responseType ="json";
+  req.send();
 
+  req.onloadend=function(){
+    fmbaas.initNCMB(req.response.NCMB_APP_KEY,req.response.NCMB_CRI_KEY);
+  }
+}
 ///NCMBにアクセス
-window.fmbaas.ncmbGreet = () => {
-  // APIキーの設定とSDK初期化（ncmbはfmbaasのオブジェクトとする）
-  window.ncmb = new NCMB("026ba82d390ff9d14394b68ba109a561e3d2167467ebaf7a7960995b644cb346", "410cc6f77669761654942e5748b851481961af02165fd27341954263b2665879");
+window.fmbaas.initNCMB = (appKey,criKey) => {
+    // APIキーの設定とSDK初期化（ncmbはfmbaasのオブジェクトとする）
+  window.ncmb = new NCMB(appKey,criKey);
   // 保存先クラスの作成
   const NcmbAccess = ncmb.DataStore("Access");
   // 保存先クラスのインスタンスを生成

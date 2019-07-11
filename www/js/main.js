@@ -22,15 +22,13 @@ home.init = function () {
     const addHowaHowaButton = document.querySelector(".addbutton.howahowa");
     const addCommentButton = document.querySelector(".addbutton.comment");
     addFromAlbumButton.addEventListener("click", { handleEvent: createItemFromAlbum, });
-    addFromCameraButton.addEventListener("click", { handleEvent: createItemFromCamera, });
+    addFromCameraButton.addEventListener("click", { handleEvent: createItemFromAlbum, });
     addHowaHowaButton.addEventListener("click", { handleEvent: createHowaHowaItem, });
     addCommentButton.addEventListener("click", { handleEvent: createCommentItem, });
 
     ///OnsenUI is ready!!!
     console.log("Onsen UI is ready!");
 };
-
-
 
 ///Itemのコンテキストメニュー表示
 const itemContext = function (e) {
@@ -58,13 +56,6 @@ HTMLElement.prototype.addClickListener = function (listener) {
     //    this.addEventListener("touchend", listener);
 };
 
-const onInitItem = function (item) {
-    item.addEventListener("inititem", (e) => {
-        console.log("eventListened")
-        grid.add(e.target, { index: 0 });
-        item.addClickListener({ handleEvent: itemContext, item: item });
-    });
-};
 //Itemに追加　引数はURI
 const addImageToGrid = function (imageURI) {
     console.log("src=" + imageURI);
@@ -83,48 +74,13 @@ const addImageToGrid = function (imageURI) {
     item.addClickListener({ handleEvent: itemContext, item: item });
 };
 
-///カメラ成功時　引数はURI　→　ファイルエントリを作成　→　PERSISTANTに移動　→　Itemに追加　→　Blob化　→　NCMBアップロード
-const cameraSuccess = function (imageURI) {
-    // Itemに追加
-    window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("?")), function (fileSystem) {
-        console.log(fileSystem.name);
-        addImageToGrid(fileSystem.nativeURL);
-    });
-    // //URIをスライスして、ファイルシステム(ディレクトリエントリ)を取得
-    // window.resolveLocalFileSystemURL(imageURI.slice(0, imageURI.lastIndexOf("/")), function (fileSystem) {
-    //     getFilesFromDirectory(fileSystem,filename)
-    // }, function (error) {
-    //     console.log('ファイル存在確認中にエラーが発生', error.code);
-    // });
-    // function getFilesFromDirectory(fileSystem) {
-    //     // FileSystemオブジェクトのrootプロパティには，DirectoryEntryオブジェクトが格納されている
-    //     //　↑　なぜかrootがなかったので、ディレクトリエントリまんまを投げてきている
-    //     var directoryEntry = fileSystem;
-    //     // DirecotryEntryオブジェクトのcreateReaderメソッドを使い，ディレクトリ内のファイルを読み込むためのDirectoryReaderオブジェクトを作成
-    //     var directoryReader = directoryEntry.createReader();
-    //     // DirectoryReaderオブジェクトのreadEntriesメソッドを使い，ディレクトリ内のエントリを読み込み，コールバック関数に配列として渡す
-    //     directoryReader.readEntries(putFileName, fail);
-
-    //     function putFileName(entries) {
-    //         // ディレクトリ内のエントリがFileEntryオブジェクトまたはDirectoryEntryオブジェクトとして配列で渡される
-    //         for (e of entries) {
-    //             if (e.isFile) {
-    //                 addImageToGrid(e.nativeURL);
-    //             }
-    //         }
-    //     }
-    //     function fail(error) {
-    //         // エラーについては http://docs.phonegap.com/en/2.0.0/cordova_file_file.md.html#FileError を参照
-    //         alert('エラーが発生しました。エラーコード: ' + error.code);
-    //     }
-    // }
-};
-
 ///Albamから
 const createItemFromAlbum = function (e) {
     const options = {};
-    if (e.target.className === "addbutton album") {
+    if (e.target.className === "addbutton album button button--material") {
         options.sourceType = Camera.PictureSourceType.SAVEDPHOTOALBUM//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
+    }else if(e.target.className === "addbutton camera button button--material"){
+        options.sourceType = Camera.PictureSourceType.CAMERA//.PHOTOLIBRARY or.CAMERA or .SAVEDPHOTOALBUM
     }
     const item = ons.createElement(`
     <div class="item">
@@ -262,8 +218,6 @@ howahowa.postpop = (e) => {
     }
 };
 
-
-
 const createCommentItem = function (e) {
     const initAlert = function (e) {
         const text = e.querySelector(".textarea");
@@ -297,7 +251,6 @@ const createCommentItem = function (e) {
         okButton.addEventListener("click", onOkButton, false);
         cancelButton.addEventListener("click", onCancelButton, false);
     };
-
     fn.createDialog("comment-dialog.html", { callback: initAlert });
 };
 

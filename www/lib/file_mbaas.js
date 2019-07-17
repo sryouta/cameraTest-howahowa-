@@ -47,48 +47,69 @@ fmbaas.upload = function (user = "testuser", data_type = "none", data) {
   }
   userData.set(data_type, data)
     .save();
-  // if (data_type === "howahowa") {
-  //   userData.set("howahowa", JSON.parse(JSON.stringify(data)))
-  //     .save();
-  // } else if (data_type === "comment") {
-  //   userData.set("comment", data)
-  //     .save();
-  // } else if (data_type === "image") {
-  //   userData.set("image", data)
-  //     .save();
-  // }else{
-  //   console.log("None type data"+data_type);
-  // }
+};
+fmbaas.download = async (user) => {
+  const UserData = await ncmb.DataStore(user);
+  return await UserData.fetchAll();
 
+};
+
+
+///localファイルはセキュリティの問題上(?)fetchAPIが使えない。
+fmbaas.getJSON = (url) => {
+  // Return a new promise.
+  return new Promise(function (resolve, reject) {
+    // Do the usual XHR stuff
+    var req = new XMLHttpRequest();
+    req.open('GET', url);
+    req.responseType = "json";
+    req.onload = function () {
+      // This is called even on 404 etc
+      // so check the status
+      if (req.status == 200) {
+        // Resolve the promise with the response text
+        resolve(req.response);
+      }
+      else {
+        // Otherwise reject with the status text
+        // which will hopefully be a meaningful error
+        reject(Error(req.statusText));
+      }
+    };
+    // Handle network errors
+    req.onerror = function () {
+      reject(Error("Network Error"));
+    };
+    // Make the request
+    req.send();
+  });
 }
-fmbaas.ncmbGreet = ()=>{
- //APIキーを取得
-  let req = new XMLHttpRequest();
-  req.open("GET","predata/apikeys.json");
-  req.responseType ="json";
-  req.send();
 
-  req.onloadend=function(){
-    fmbaas.initNCMB(req.response.NCMB_APP_KEY,req.response.NCMB_CRI_KEY);
-  }
+fmbaas.ncmbGreet = async () => {
+  const resp = await fmbaas.getJSON("predata/apikeys.json")
+  await fmbaas.initNCMB(resp.NCMB_APP_KEY, resp.NCMB_CRI_KEY);
+  fmbaas.userData = await fmbaas.download(user);
+  console.log(fmbaas.userData);
 }
 ///NCMBにアクセス
-window.fmbaas.initNCMB = (appKey,criKey) => {
+window.fmbaas.initNCMB = async (appKey, criKey) => {
+  try {
     // APIキーの設定とSDK初期化（ncmbはfmbaasのオブジェクトとする）
-  window.ncmb = new NCMB(appKey,criKey);
-  // 保存先クラスの作成
-  const NcmbAccess = ncmb.DataStore("Access");
-  // 保存先クラスのインスタンスを生成
-  const n_access = new NcmbAccess();
-  // 値を設定と保存
-  n_access.set("message", "Hello, NCMB!")
-    .save()
-    .then(function (object) {
-      // 保存に成功した場合の処理
-    })
-    .catch(function (err) {
-      // 保存に失敗した場合の処理
-    });
+    window.ncmb = new NCMB(appKey, criKey);
+    // 保存先クラスの作成
+    const NcmbAccess = ncmb.DataStore("Access");
+    // 保存先クラスのインスタンスを生成
+    const n_access = new NcmbAccess();
+    // 値を設定と保存
+    await n_access
+      .set("message", "Hello, NCMB!")
+      .save();
+    console.log("aaa");
+    return "suc";
+  } catch (err) {
+    throw (err);
+  }
+
 };
 
 

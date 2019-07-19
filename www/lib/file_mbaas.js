@@ -38,7 +38,7 @@ window.fmbaas.getUserData = (userName) => {
     });
 
 };
-//userdata受信
+//userdata送信
 fmbaas.upload = function (user = "testuser", data_type = "none", data) {
   const UserData = ncmb.DataStore(user);
   const userData = new UserData;
@@ -48,10 +48,11 @@ fmbaas.upload = function (user = "testuser", data_type = "none", data) {
   userData.set(data_type, data)
     .save();
 };
+
+//userdata受信
 fmbaas.download = async (user) => {
   const UserData = await ncmb.DataStore(user);
   return await UserData.fetchAll();
-
 };
 
 
@@ -61,21 +62,32 @@ fmbaas.getJSON = (url) => {
   return new Promise(function (resolve, reject) {
     // Do the usual XHR stuff
     var req = new XMLHttpRequest();
-    req.open('GET', url);
+    req.open('GET', url, true);
     req.responseType = "json";
-    req.onload = function () {
+    req.addEventListener("loadend", () => {
       // This is called even on 404 etc
       // so check the status
-      if (req.status == 200) {
+      const status_bool = (()=>{
+        const errorCode = [3,4,5];
+        const status = ~~(req.status/100);
+        const index = errorCode.indexOf(status);
+        if(index===-1){
+          return true;
+        }else{
+          return false;
+        };
+      })();
+      if (status_bool) {
         // Resolve the promise with the response text
         resolve(req.response);
       }
       else {
         // Otherwise reject with the status text
         // which will hopefully be a meaningful error
+        console.log("req.status:" + req.status);
         reject(Error(req.statusText));
       }
-    };
+    });
     // Handle network errors
     req.onerror = function () {
       reject(Error("Network Error"));
@@ -87,6 +99,7 @@ fmbaas.getJSON = (url) => {
 
 fmbaas.ncmbGreet = async () => {
   const resp = await fmbaas.getJSON("predata/apikeys.json")
+    .catch((err) => { console.log(JSON.stringify(err)) });
   await fmbaas.initNCMB(resp.NCMB_APP_KEY, resp.NCMB_CRI_KEY);
   fmbaas.userData = await fmbaas.download(user);
   console.log(fmbaas.userData);
@@ -104,12 +117,10 @@ window.fmbaas.initNCMB = async (appKey, criKey) => {
     await n_access
       .set("message", "Hello, NCMB!")
       .save();
-    console.log("aaa");
     return "suc";
   } catch (err) {
     throw (err);
   }
-
 };
 
 

@@ -1,10 +1,11 @@
 // This is a JavaScript file
 
+/*global fmbaas ncmb*/
+
 window.fmbaas = {};
 
 ///dateとusernameを利用してユニークなファイル名を生成する
 fmbaas.getUniqueName = (userName, modifier) => {
-  let fileName = ""
   const dt = new Date();
   return `${dt.getFullYear()}${dt.getMonth() + 1}${dt.getDate()}${dt.getHours()}${dt.getMinutes()}${dt.getSeconds()}${userName}${modifier}`
 };
@@ -16,7 +17,10 @@ fmbaas.resolveFileSystem = (url) => new Promise((resolve, reject) => window.reso
 ///arg:old_uri,new_url_of_directory,new_filename(string)
 ///ret:Promise
 fmbaas.fileMove = (old_uri, new_url, fileName) => new Promise((resolve, reject) => {
-  Promise.all([fmbaas.resolveFileSystem(old_uri), fmbaas.resolveFileSystem(new_url)])
+  Promise.all([
+    fmbaas.resolveFileSystem(old_uri),
+    fmbaas.resolveFileSystem(new_url)
+  ])
     .then(entryArr => {
       const fileEntry = entryArr[0];
       const dirEntry = entryArr[1];
@@ -26,12 +30,11 @@ fmbaas.fileMove = (old_uri, new_url, fileName) => new Promise((resolve, reject) 
 
 //userdata受信
 window.fmbaas.getUserData = (userName) => {
-  let UserData = ncmb.DataStore("UserData");
-  UserData.equalTo("userName", userName)
+  let UserData = ncmb.DataStore('UserData');
+  UserData.equalTo('userName', userName)
     .fetchAll()
-    .then(function (results) {
-      userData = results;
-      console.log("userdata successed.");
+    .then(function () {
+      console.log('userdata successed.');
     })
     .catch(function (err) {
       console.log(err);
@@ -39,10 +42,11 @@ window.fmbaas.getUserData = (userName) => {
 
 };
 //userdata送信
-fmbaas.upload = function (user = "testuser", data_type = "none", data) {
+fmbaas.upload = function (user = 'testuser', data_type = 'none', _data) {
   const UserData = ncmb.DataStore(user);
-  const userData = new UserData;
-  if (typeof data != "string") {
+  const userData = new UserData();
+  let data = _data
+  if (typeof data !== 'string') {
     data = JSON.parse(JSON.stringify(data));
   }
   userData.set(data_type, data)
@@ -52,57 +56,52 @@ fmbaas.upload = function (user = "testuser", data_type = "none", data) {
 //userdata受信
 fmbaas.download = async (user) => {
   const UserData = await ncmb.DataStore(user);
-  return await UserData.fetchAll();
+  return UserData.fetchAll();
 };
 
 
 ///localファイルはセキュリティの問題上(?)fetchAPIが使えない。
-fmbaas.getJSON = (url) => {
-  // Return a new promise.
-  return new Promise(function (resolve, reject) {
-    // Do the usual XHR stuff
-    var req = new XMLHttpRequest();
-    req.open('GET', url, true);
-    req.responseType = "json";
-    req.addEventListener("loadend", () => {
-      // This is called even on 404 etc
-      // so check the status
-      const status_bool = (()=>{
-        const errorCode = [3,4,5];
-        const status = ~~(req.status/100);
-        const index = errorCode.indexOf(status);
-        if(index===-1){
-          return true;
-        }else{
-          return false;
-        };
-      })();
-      if (status_bool) {
-        // Resolve the promise with the response text
-        resolve(req.response);
+fmbaas.getJSON = (url) => new Promise(function (resolve, reject) {
+  // Do the usual XHR stuff
+  var req = new XMLHttpRequest();
+  req.open('GET', url, true);
+  req.responseType = 'json';
+  req.addEventListener('loadend', () => {
+    // This is called even on 404 etc
+    // so check the status
+    const status_bool = (() => {
+      const errorCode = [3, 4, 5];
+      const status = ~~(req.status / 100);
+      const index = errorCode.indexOf(status);
+      if (index === -1) {
+        return true;
       }
-      else {
-        // Otherwise reject with the status text
-        // which will hopefully be a meaningful error
-        console.log("req.status:" + req.status);
-        reject(Error(req.statusText));
-      }
-    });
-    // Handle network errors
-    req.onerror = function () {
-      reject(Error("Network Error"));
-    };
-    // Make the request
-    req.send();
+      return false;
+    })();
+    if (status_bool) {
+      // Resolve the promise with the response text
+      resolve(req.response);
+    } else {
+      // Otherwise reject with the status text
+      // which will hopefully be a meaningful error
+      console.log('req.status:' + req.status);
+      reject(Error(req.statusText));
+    }
   });
-}
+  // Handle network errors
+  req.onerror = function () {
+    reject(Error('Network Error'));
+  };
+  // Make the request
+  req.send();
+});
+
 
 fmbaas.ncmbGreet = async () => {
-  const resp = await fmbaas.getJSON("predata/apikeys.json")
+  const resp = await fmbaas.getJSON('predata/apikeys.json')
     .catch((err) => { console.log(JSON.stringify(err)) });
   await fmbaas.initNCMB(resp.NCMB_APP_KEY, resp.NCMB_CRI_KEY);
   fmbaas.userData = await fmbaas.download(user);
-  console.log(fmbaas.userData);
 }
 ///NCMBにアクセス
 window.fmbaas.initNCMB = async (appKey, criKey) => {
@@ -110,14 +109,14 @@ window.fmbaas.initNCMB = async (appKey, criKey) => {
     // APIキーの設定とSDK初期化（ncmbはfmbaasのオブジェクトとする）
     window.ncmb = new NCMB(appKey, criKey);
     // 保存先クラスの作成
-    const NcmbAccess = ncmb.DataStore("Access");
+    const NcmbAccess = ncmb.DataStore('Access');
     // 保存先クラスのインスタンスを生成
     const n_access = new NcmbAccess();
     // 値を設定と保存
     await n_access
-      .set("message", "Hello, NCMB!")
+      .set('message', 'Hello, NCMB!')
       .save();
-    return "suc";
+    return 'suc';
   } catch (err) {
     throw (err);
   }
@@ -126,42 +125,42 @@ window.fmbaas.initNCMB = async (appKey, criKey) => {
 
 ///画像・ローディング用
 fmbaas.hideProgress = function (progress) {
-  progress.style.display = "none";
+  progress.style.display = 'none';
 };
 
 fmbaas.progressOn = function (imageDivElem, options = {}) {
   ///default
   if (options === {}) {
-    options = { text: "uploading..." };
+    options = { text: 'uploading...' };
   }
   //loadImage作成
-  let svgStr = `<svg width="150" height="120" viewBox="-10 0 115 105" xmlns="http://www.w3.org/2000/svg" fill="#fff" stroke="#999">`
+  let svgStr = `<svg width='150' height='120' viewBox='-10 0 115 105' xmlns='http://www.w3.org/2000/svg' fill='#fff' stroke='#999'>`
   const circlePos = [12.5, 52.5, 92.5];
   for (cx of circlePos) {
     for (cy of circlePos) {
       svgStr += `
-    <circle cx="${cx}" cy="${cy}" r="12.5">
-        <animate attributeName="fill-opacity"
-         begin="${(cx + cy) * 3}ms" dur="1s"
-         values="1;.2;1" calcMode="linear"
-         repeatCount="indefinite" />
+    <circle cx='${cx}' cy='${cy}' r='12.5'>
+        <animate attributeName='fill-opacity'
+         begin='${(cx + cy) * 3}ms' dur='1s'
+         values='1;.2;1' calcMode='linear'
+         repeatCount='indefinite' />
     </circle>
     `;
     }
   }
-  svgStr += `<text x="50%" text-anchor="middle" y="120" font-size="20 textLength="125" lengthAdjust="spacingAndGlyphs">${options.text}</text>`;
-  svgStr += "</svg>";
+  svgStr += `<text x='50%' text-anchor='middle' y='120' font-size='20 textLength='125' lengthAdjust='spacingAndGlyphs'>${options.text}</text>`;
+  svgStr += '</svg>';
 
   loadImage = ons.createElement(svgStr);
 
   //CSS
-  imageDivElem.style.position = "relative";
+  imageDivElem.style.position = 'relative';
 
-  loadImage.style.position = "absolute";
-  loadImage.style.top = "50%";
-  loadImage.style.left = "50%";
-  loadImage.style.transform = "translate(-50%,-50%)";
-  loadImage.style.width = "70px";
+  loadImage.style.position = 'absolute';
+  loadImage.style.top = '50%';
+  loadImage.style.left = '50%';
+  loadImage.style.transform = 'translate(-50%,-50%)';
+  loadImage.style.width = '70px';
 
   imageDivElem.appendChild(loadImage);
 
@@ -184,16 +183,16 @@ fmbaas.readFile = (fileEntry, fileType) => new Promise((resolve, reject) => {
 
 fmbaas.uploadImage = (imageData, imageDataType, fileName, wrapperDiv, ) => {
   //画像の上にローディング画面
-  const progress = fmbaas.progressOn(wrapperDiv, { text: "uploading..." });
+  const progress = fmbaas.progressOn(wrapperDiv, { text: 'uploading...' });
   //イメージデータのタイプ→Blob形式へ
-  if (imageDataType === "Base64") {
+  if (imageDataType === 'Base64') {
     // NCMBにアップロード(バイト文字列とファイル名を渡す)
     const byteCharacters = fmbaas.toBlob(imageData);
-  } else if (imageDataType === "Blob") {
+  } else if (imageDataType === 'Blob') {
     const byteCharacters = imageData;
   } else {
-    const byteCharacters = "";
-    console.log("  \"Base64\" or \"Blob\"   ")
+    const byteCharacters = '';
+    console.log('  \'Base64\' or \'Blob\'   ')
   }
   ///アップロード
   ncmb.File.upload(fileName, byteCharacters)
@@ -202,8 +201,8 @@ fmbaas.uploadImage = (imageData, imageDataType, fileName, wrapperDiv, ) => {
     })
     .catch(function (error) {
       fmbaas.hideProgress(progress);
-      fmbaas.progressOn(wrapperDiv, { text: "upload failed!" });
-      alert("アップロードエラー" + JSON.stringify(error));
+      fmbaas.progressOn(wrapperDiv, { text: 'upload failed!' });
+      alert('アップロードエラー' + JSON.stringify(error));
     });
 }
 
